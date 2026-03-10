@@ -1,0 +1,1 @@
+techno : chromaDB, milvus et Qdrant à voir pour le vector store 
