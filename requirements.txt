@@ -6,5 +6,8 @@ ipykernel
 langchain-huggingface
 langchain-anthropic
 sentence-transformers
-langchain-milvus
-pymilvus[milvus-lite]
+langchain-qdrant
+langchain-docling
+fastembed
+markitdown
+markitdown[pdf]
