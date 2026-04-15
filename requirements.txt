@@ -11,3 +11,5 @@ langchain-docling
 fastembed
 markitdown
 markitdown[pdf]
+ollama
+langchain_ollama
