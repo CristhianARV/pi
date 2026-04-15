@@ -13,3 +13,4 @@ markitdown
 markitdown[pdf]
 ollama
 langchain_ollama
+rich

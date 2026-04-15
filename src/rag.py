@@ -1,58 +1,79 @@
-import os
 from langchain.tools import tool
 from langchain.agents import create_agent
+from langchain_core.messages import BaseMessage
 
-from llm import get_llm
-from embeddings import get_embeddings
-from bdVector import get_vector_store
-from parser import load_pdf, split_documents
-
-# --- Setup ---
+from bdVector import VectorStoreManager
 
 
-model = get_llm()
-embeddings_model = get_embeddings()
-vector_store = get_vector_store(embeddings_model)
+class RAGPipeline:
+    """
+    Retrieval-Augmented Generation pipeline.
 
-# --- Load and index documents ---
+    Wires a VectorStoreManager and an LLM into a LangChain agent that
+    uses a retrieval tool to answer user queries.
+    """
 
-docs = load_pdf("../data/Manuals/mds_axis_compensation_en.pdf")
-splits = split_documents(docs)
-document_ids = vector_store.add_documents(splits)
-print(f"Indexed {len(document_ids)} chunks.")
-
-# --- RAG tool ---
-
-@tool(response_format="content_and_artifact")
-def retrieve_context(query: str):
-    """Retrieve information to help answer a query."""
-    retrieved_docs = vector_store.similarity_search(query, k=2)
-    serialized = "\n\n".join(
-        f"Source: {doc.metadata}\nContent: {doc.page_content}"
-        for doc in retrieved_docs
-    )
-    return serialized, retrieved_docs
-
-
-# --- Agent with retrieval tool ---
-
-tools = [retrieve_context]
-prompt = (
-    "You have access to a tool that retrieves context from a blog post. "
-    "Use the tool to help answer user queries."
-)
-agent = create_agent(model, tools, system_prompt=prompt)
-
-
-# --- Test ---
-
-if __name__ == "__main__":
-    query = (
-        "What is achs_nr meaning and how is it used in the context of the document?"
-    )
-    print("\n=== Agent with retrieval tool ===")
-    for event in agent.stream(
-        {"messages": [{"role": "user", "content": query}]},
-        stream_mode="values",
+    def __init__(
+        self,
+        vector_store_manager: VectorStoreManager,
+        llm,
+        k: int = 10,
+        system_prompt: str = (
+            "You are a helpful assistant. "
+            "Use the retrieve_context tool to look up relevant information "
+            "before answering the user's question."
+        ),
     ):
-        event["messages"][-1].pretty_print()
+        self.vsm = vector_store_manager
+        self.llm = llm
+        self.k = k
+        self.system_prompt = system_prompt
+        self._agent = None
+
+    def _build_retrieve_tool(self):
+        vsm = self.vsm
+        k = self.k
+
+        @tool(response_format="content_and_artifact")
+        def retrieve_context(query: str):
+            """Retrieve relevant document chunks to help answer a query."""
+            docs = vsm.similarity_search(query, k=k)
+            serialized = "\n\n".join(
+                f"Source: {doc.metadata}\nContent: {doc.page_content}"
+                for doc in docs
+            )
+            return serialized, docs
+
+        return retrieve_context
+
+    def build_agent(self):
+        retrieve_tool = self._build_retrieve_tool()
+        self._agent = create_agent(
+            self.llm,
+            [retrieve_tool],
+            system_prompt=self.system_prompt,
+        )
+        return self._agent
+
+    def index_file(self, file_path: str, parser) -> int:
+        """Parse and index a document. Returns the number of chunks indexed."""
+        docs = parser.load(file_path)
+        ids = self.vsm.add_documents(docs)
+        return len(ids)
+
+    def stream(self, query: str):
+        """Stream agent responses for a query, yielding messages."""
+        if self._agent is None:
+            self.build_agent()
+        for event in self._agent.stream(
+            {"messages": [{"role": "user", "content": query}]},
+            stream_mode="values",
+        ):
+            yield event["messages"][-1]
+
+    def ask(self, query: str) -> BaseMessage:
+        """Run the agent and return the final message."""
+        last = None
+        for msg in self.stream(query):
+            last = msg
+        return last

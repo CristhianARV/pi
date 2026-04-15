@@ -1,7 +1,22 @@
-import os
-from langchain.chat_models import init_chat_model
+from langchain_ollama import ChatOllama
 
 
-def get_llm(model_name: str = "claude-sonnet-4-6"):
-    """Initialize and return a chat model."""
-    return init_chat_model(model_name)
+class LLMManager:
+    """Manages a remote Ollama LLM connection."""
+
+    DEFAULT_BASE_URL = "http://157.26.83.15/ollama/"
+    DEFAULT_MODEL = "qwen3:4b"
+
+    def __init__(
+        self,
+        model: str = DEFAULT_MODEL,
+        base_url: str = DEFAULT_BASE_URL,
+    ):
+        self.model = model
+        self.base_url = base_url
+        self._llm: ChatOllama | None = None
+
+    def get_llm(self) -> ChatOllama:
+        if self._llm is None:
+            self._llm = ChatOllama(model=self.model, base_url=self.base_url)
+        return self._llm

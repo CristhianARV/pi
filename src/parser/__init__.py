@@ -1,23 +1,33 @@
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_docling.loader import DoclingLoader, ExportType
 from langchain_core.documents import Document
+from docling.chunking import HybridChunker
 
 
-def load_pdf(path: str) -> list[Document]:
-    """Load a PDF file and return one Document per page."""
-    loader = PyPDFLoader(path)
-    return loader.load()
+class DocumentParser:
+    """Loads and chunks documents using Docling with HybridChunker."""
 
+    DEFAULT_MODEL = "Qwen/Qwen3-Embedding-0.6B"
+    DEFAULT_MAX_TOKENS = 300
 
-def split_documents(
-    docs: list[Document],
-    chunk_size: int = 1000,
-    chunk_overlap: int = 200,
-) -> list[Document]:
-    """Split documents into chunks for indexing."""
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        add_start_index=True,
-    )
-    return splitter.split_documents(docs)
+    def __init__(
+        self,
+        tokenizer: str = DEFAULT_MODEL,
+        max_tokens: int = DEFAULT_MAX_TOKENS,
+    ):
+        self.tokenizer = tokenizer
+        self.max_tokens = max_tokens
+
+    def load(self, file_path: str) -> list[Document]:
+        """Load and chunk a document file (PDF, DOCX, …) into LangChain Documents."""
+        loader = DoclingLoader(
+            file_path=file_path,
+            export_type=ExportType.DOC_CHUNKS,
+            chunker=HybridChunker(
+                tokenizer=self.tokenizer,
+                max_tokens=self.max_tokens,
+                merge_peers=True,
+                repeat_table_header=True,
+                omit_header_on_overflow=True,
+            ),
+        )
+        return loader.load()
