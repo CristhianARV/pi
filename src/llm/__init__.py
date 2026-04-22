@@ -5,7 +5,7 @@ class LLMManager:
     """Manages a remote Ollama LLM connection."""
 
     DEFAULT_BASE_URL = "http://157.26.83.15/ollama/"
-    DEFAULT_MODEL = "qwen3:4b"
+    DEFAULT_MODEL = "qwen3.5:9b"
 
     def __init__(
         self,
