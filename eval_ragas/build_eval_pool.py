@@ -3,14 +3,13 @@ from pathlib import Path
 
 import pandas as pd
 
-import parser
-
 
 STANDARD_COLUMNS = [
     "sample_id",
     "question",
     "reference",
     "source_type",
+    "theme",
     "topic",
     "difficulty",
     "tags",
@@ -34,7 +33,7 @@ def load_one_csv(path: Path, default_source_type: str) -> pd.DataFrame:
     if "source_type" not in df.columns:
         df["source_type"] = default_source_type
 
-    for col in ["topic", "difficulty", "tags", "notes"]:
+    for col in ["theme", "topic", "difficulty", "tags", "notes"]:
         if col not in df.columns:
             df[col] = ""
 

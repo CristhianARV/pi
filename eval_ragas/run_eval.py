@@ -4,11 +4,10 @@ import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
-
+import inspect
 import pandas as pd
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
-from ragas import EvaluationDataset, aevaluate
 from ragas.llms import llm_factory
 from ragas.metrics import DiscreteMetric
 from ragas.metrics.collections import (
@@ -25,13 +24,39 @@ from ragas.metrics.collections import AnswerAccuracy
 
 from local_rag_adapter import LocalRAGClient
 
-
-def build_metrics() -> Tuple[List[Any], List[Any]]:
+def build_metrics(judge_llm) -> Tuple[List[Any], List[Any]]:
     """
     Returns:
     - metrics_with_reference: for rows that have a gold reference answer
     - metrics_without_reference: for rows without reference
     """
+
+    coverage_metric = DiscreteMetric(
+        name="coverage",
+        prompt=(
+            "Evaluate how completely the response covers the expected answer.\n"
+            "Question: {user_input}\n"
+            "Reference: {reference}\n"
+            "Response: {response}\n\n"
+            "Return only one of: 'complete', 'partial', 'missing'."
+        ),
+        allowed_values=["complete", "partial", "missing"],
+    )
+
+    clarity_metric = DiscreteMetric(
+        name="clarity",
+        prompt=(
+            "Evaluate the clarity of the response, considering that it must be understandable "
+            "by a human operator in a production environment.\n"
+            "A response is:\n"
+            "- 'clear' if it is easy to understand, precise, and directly usable;\n"
+            "- 'acceptable' if it is globally understandable but could be clearer or better structured;\n"
+            "- 'unclear' if it is confusing, ambiguous, or difficult to use.\n"
+            "Response: {response}\n"
+            "Return only one of: 'clear', 'acceptable', 'unclear'."
+        ),
+        allowed_values=["clear", "acceptable", "unclear"],
+    )
 
     grounded_or_honest_refusal = DiscreteMetric(
         name="grounded_or_honest_refusal",
@@ -48,18 +73,25 @@ def build_metrics() -> Tuple[List[Any], List[Any]]:
         allowed_values=["pass", "fail"],
     )
 
+    coverage_metric.llm = judge_llm
+    clarity_metric.llm = judge_llm
+    grounded_or_honest_refusal.llm = judge_llm
+
     metrics_with_reference = [
-        Faithfulness(),
-        ContextPrecision(),
-        ContextRecall(),
-        AnswerAccuracy(),
+        coverage_metric,
+        clarity_metric,
+        Faithfulness(llm=judge_llm),
+        ContextPrecision(llm=judge_llm),
+        ContextRecall(llm=judge_llm),
+        AnswerAccuracy(llm=judge_llm, name="answer_accuracy"),
         BleuScore(),
         RougeScore(rouge_type="rougeL", mode="fmeasure"),
         grounded_or_honest_refusal,
     ]
 
     metrics_without_reference = [
-        Faithfulness(),
+        clarity_metric,
+        Faithfulness(llm=judge_llm),
         grounded_or_honest_refusal,
     ]
 
@@ -107,6 +139,7 @@ async def collect_rag_outputs(
                 {
                     "sample_id": row.get("sample_id", ""),
                     "source_type": row.get("source_type", ""),
+                    "theme": row.get("theme", ""),
                     "topic": row.get("topic", ""),
                     "difficulty": row.get("difficulty", ""),
                     "tags": row.get("tags", ""),
@@ -132,7 +165,6 @@ async def collect_rag_outputs(
 
     return ragas_rows, pd.DataFrame(audit_rows)
 
-
 def split_rows_by_reference(
     ragas_rows: List[Dict[str, Any]],
     audit_df: pd.DataFrame,
@@ -155,30 +187,100 @@ def split_rows_by_reference(
 
     return rows_with_ref, audit_with_ref, rows_without_ref, audit_without_ref
 
+def _extract_metric_value(result: Any) -> Any:
+    """
+    Normalize various Ragas metric result shapes to a scalar value.
+    Works for numeric metrics and custom DiscreteMetric outputs.
+    """
+    if result is None:
+        return None
+
+    if isinstance(result, (str, int, float, bool)):
+        return result
+
+    if isinstance(result, dict):
+        for key in ("score", "value", "label", "verdict"):
+            if key in result and result[key] is not None:
+                return result[key]
+
+    for attr in ("score", "value", "label", "verdict"):
+        if hasattr(result, attr):
+            val = getattr(result, attr)
+            if val is not None:
+                return val
+
+    if hasattr(result, "model_dump"):
+        data = result.model_dump()
+        if isinstance(data, dict):
+            for key in ("score", "value", "label", "verdict"):
+                if key in data and data[key] is not None:
+                    return data[key]
+
+    return str(result)
 
 async def evaluate_subset(
     rows: List[Dict[str, Any]],
     audit_df: pd.DataFrame,
     metrics: List[Any],
-    judge_model: str,
-    openai_api_key: str,
+    judge_llm,
 ) -> pd.DataFrame:
     if not rows:
         return pd.DataFrame()
 
-    dataset = EvaluationDataset.from_list(rows)
+    scored_rows = []
 
-    judge_client = AsyncOpenAI(api_key=openai_api_key)
-    judge_llm = llm_factory(judge_model, client=judge_client)
+    for row in rows:
+        metric_results: Dict[str, Any] = {}
 
-    result = await aevaluate(
-        dataset=dataset,
-        metrics=metrics,
-        llm=judge_llm,
-    )
+        available_values = {
+            "user_input": row.get("user_input"),
+            "response": row.get("response"),
+            "reference": row.get("reference"),
+            "retrieved_contexts": row.get("retrieved_contexts"),
+            "retrieved_context_ids": row.get("retrieved_context_ids"),
+        }
 
-    result_df = result.to_pandas().reset_index(drop=True)
+        for metric in metrics:
+            metric_name = getattr(metric, "name", type(metric).__name__)
 
+            try:
+                if hasattr(metric, "llm") and getattr(metric, "llm", None) is None:
+                    metric.llm = judge_llm
+
+                sig = inspect.signature(metric.ascore)
+                accepted_params = []
+
+                for param_name, param in sig.parameters.items():
+                    if param_name == "self":
+                        continue
+                    if param.kind in (
+                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        inspect.Parameter.KEYWORD_ONLY,
+                    ):
+                        accepted_params.append(param_name)
+                    elif param.kind == inspect.Parameter.VAR_KEYWORD:
+                        accepted_params = list(available_values.keys())
+                        break
+                kwargs = {
+                    k: v
+                    for k, v in available_values.items()
+                    if k in accepted_params and v is not None
+                }
+
+                if metric_name in {"coverage", "clarity", "grounded_or_honest_refusal"}:
+                    kwargs["llm"] = judge_llm
+
+                result = await metric.ascore(**kwargs)
+                metric_results[metric_name] = _extract_metric_value(result)
+
+
+            except Exception as e:
+                metric_results[metric_name] = None
+                metric_results[f"{metric_name}_error"] = str(e)
+
+    scored_rows.append(metric_results)
+
+    result_df = pd.DataFrame(scored_rows).reset_index(drop=True)
     merged = pd.concat([audit_df.reset_index(drop=True), result_df], axis=1)
     return merged
 
@@ -189,8 +291,10 @@ async def main() -> None:
     openai_api_key = os.environ["OPENAI_API_KEY"]
     judge_model = os.getenv("OPENAI_JUDGE_MODEL", "gpt-4o-mini")
     rag_top_k = int(os.getenv("LOCAL_RAG_TOP_K", "5"))
+    judge_client = AsyncOpenAI(api_key=openai_api_key)
+    judge_llm = llm_factory(judge_model, client=judge_client)
 
-    pool_path = Path("data_eval/eval_pool.csv")
+    pool_path = Path(os.getenv("EVAL_POOL_PATH", "data_eval/eval_pool.csv"))
     if not pool_path.exists():
         raise FileNotFoundError(
             f"Evaluation pool not found: {pool_path.resolve()}"
@@ -202,7 +306,7 @@ async def main() -> None:
     out_dir = Path("outputs") / f"run_{timestamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    metrics_with_reference, metrics_without_reference = build_metrics()
+    metrics_with_reference, metrics_without_reference = build_metrics(judge_llm)
 
     ragas_rows, audit_df = await collect_rag_outputs(
         pool_df=pool_df,
@@ -220,8 +324,7 @@ async def main() -> None:
         rows=rows_with_ref,
         audit_df=audit_with_ref,
         metrics=metrics_with_reference,
-        judge_model=judge_model,
-        openai_api_key=openai_api_key,
+        judge_llm=judge_llm,
     )
     if not scored_with_ref.empty:
         scored_with_ref.to_csv(out_dir / "scored_with_reference.csv", index=False)
@@ -230,8 +333,7 @@ async def main() -> None:
         rows=rows_without_ref,
         audit_df=audit_without_ref,
         metrics=metrics_without_reference,
-        judge_model=judge_model,
-        openai_api_key=openai_api_key,
+        judge_llm=judge_llm,
     )
     if not scored_without_ref.empty:
         scored_without_ref.to_csv(out_dir / "scored_without_reference.csv", index=False)
@@ -264,6 +366,22 @@ async def main() -> None:
                     "max": scored_with_ref[col].max(),
                 }
             )
+
+        for col in ["coverage", "clarity", "grounded_or_honest_refusal"]:
+            if col in scored_with_ref.columns:
+                counts = scored_with_ref[col].value_counts(dropna=False)
+                for value, count in counts.items():
+                    summary_rows.append(
+                        {
+                            "subset": "with_reference",
+                            "metric": f"{col}={value}",
+                            "mean": count,
+                            "median": None,
+                            "min": None,
+                            "max": None,
+                            "count": count,
+                        }
+                    )
 
     if not scored_without_ref.empty:
         numeric_cols = [

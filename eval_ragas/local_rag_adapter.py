@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
@@ -21,18 +22,32 @@ class LocalRAGResponse:
 
 class LocalRAGClient:
     """
-    Adapter direct vers le RAG local du repo `pi`.
-    Cette version appelle directement le pipeline Python local.
+    Adapter direct vers le RAG local.
+    Appelle directement le pipeline Python local.
     """
-
     def __init__(self) -> None:
         self.pipeline: Optional[RAGPipeline] = None
 
     def setup(self) -> None:
+        from pathlib import Path
+
+        project_root = Path(__file__).resolve().parents[1]
+        default_manual_path = project_root / "data" / "Manuals" / "mds_axis_compensation_en.pdf"
+        manual_path = Path(
+            os.getenv("LOCAL_RAG_MANUAL_PATH", str(default_manual_path))
+        ).expanduser().resolve()
+
+        collection_name = os.getenv("LOCAL_RAG_COLLECTION_NAME", "docs_eval_one")
+        max_index_docs = int(os.getenv("LOCAL_RAG_MAX_INDEX_DOCS", "5"))
+
+        print(f"[DEBUG] manual_path={manual_path}")
+        print(f"[DEBUG] collection_name={collection_name}")
+        print(f"[DEBUG] max_index_docs={max_index_docs}")
+
         embeddings = EmbeddingsManager().get_embeddings()
         vsm = VectorStoreManager(
             embeddings=embeddings,
-            collection_name="docs",
+            collection_name=collection_name,
         )
         llm = LLMManager().get_llm()
         parser = DocumentParser()
@@ -42,19 +57,36 @@ class LocalRAGClient:
             llm=llm,
         )
 
-        file_path = os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "data",
-            "Manuals",
-            "mds_axis_compensation_en.pdf",
-        )
+        try:
+            collection_info = vsm._client.get_collection(collection_name)
+            points_count = collection_info.points_count
+        except Exception:
+            points_count = 0
 
-        collection_info = vsm._client.get_collection("docs")
-        if collection_info.points_count == 0:
-            self.pipeline.index_file(file_path, parser)
+        print(f"[DEBUG] existing points_count={points_count}")
+
+        if points_count == 0:
+            if not manual_path.exists():
+                raise FileNotFoundError(
+                    f"Manual not found: {manual_path}\n"
+                    "Set LOCAL_RAG_MANUAL_PATH to a valid PDF path."
+                )
+
+            print("[DEBUG] loading docs...")
+            docs = parser.load(str(manual_path))
+            print(f"[DEBUG] parser returned {len(docs)} docs")
+
+            docs = docs[:max_index_docs]
+            print(f"[DEBUG] indexing {len(docs)} docs")
+
+            if not docs:
+                raise RuntimeError("Parser returned no documents to index.")
+
+            vsm.add_documents(docs)
+            print("[DEBUG] indexing done.")
 
         self.pipeline.build_agent()
+        print("[DEBUG] agent ready.")
 
     async def __aenter__(self) -> "LocalRAGClient":
         self.setup()
@@ -74,7 +106,9 @@ class LocalRAGClient:
                 "Pipeline not initialized. Use LocalRAGClient inside 'async with'."
             )
 
+        print(f"[DEBUG] querying: {question}")
         result = self.pipeline.ask_with_context(question, top_k=top_k)
+        print("[DEBUG] query done.")
 
         return LocalRAGResponse(
             question=question,

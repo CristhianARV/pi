@@ -1,7 +1,8 @@
 import time
 from langchain.tools import tool
 from langchain.agents import create_agent
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage
+
 
 from bdVector import VectorStoreManager
 
@@ -85,49 +86,62 @@ class RAGPipeline:
             last = msg
         return last
 
-def _message_to_text(self, msg: BaseMessage) -> str:
-    content = getattr(msg, "content", "")
-    if isinstance(content, list):
-        return "\n".join(str(x) for x in content)
-    return str(content)
+    def _message_to_text(self, msg: BaseMessage) -> str:
+        content = getattr(msg, "content", "")
+        if isinstance(content, list):
+            return "\n".join(str(x) for x in content)
+        return str(content)
 
+    def ask_with_context(self, query: str, top_k: int | None = None) -> dict:
+        """
+        Evaluation-friendly path:
+        - retrieves contexts directly from the vector store
+        - calls the LLM directly without agent/tool orchestration
+        - returns response + retrieved contexts + latency
+        """
+        k = top_k if top_k is not None else self.k
 
-def ask_with_context(self, query: str, top_k: int | None = None) -> dict:
-    """
-    Run the agent and return the final response together with
-    the retrieved contexts used by the retriever.
-    """
-    if top_k is not None and top_k != self.k:
-        self.k = top_k
-        self._agent = None
+        start = time.perf_counter()
 
-    self._last_retrieved_docs = []
-    self._last_retrieved_query = None
+        docs = self.vsm.similarity_search(query, k=k)
+        self._last_retrieved_docs = docs
+        self._last_retrieved_query = query
 
-    start = time.perf_counter()
-    msg = self.ask(query)
-    latency_ms = (time.perf_counter() - start) * 1000
+        retrieved_contexts = [getattr(doc, "page_content", "") for doc in docs]
+        retrieved_context_ids = []
 
-    retrieved_contexts = []
-    retrieved_context_ids = []
+        for doc in docs:
+            metadata = getattr(doc, "metadata", {}) or {}
+            doc_id = (
+                metadata.get("id")
+                or metadata.get("chunk_id")
+                or metadata.get("document_id")
+                or metadata.get("source")
+                or ""
+            )
+            retrieved_context_ids.append(str(doc_id))
 
-    for doc in self._last_retrieved_docs:
-        retrieved_contexts.append(getattr(doc, "page_content", ""))
-
-        metadata = getattr(doc, "metadata", {}) or {}
-        doc_id = (
-            metadata.get("id")
-            or metadata.get("chunk_id")
-            or metadata.get("document_id")
-            or metadata.get("source")
-            or ""
+        context_text = "\n\n".join(
+            f"Source: {getattr(doc, 'metadata', {})}\nContent: {getattr(doc, 'page_content', '')}"
+            for doc in docs
         )
-        retrieved_context_ids.append(str(doc_id))
 
-    return {
-        "question": query,
-        "response": self._message_to_text(msg) if msg is not None else "",
-        "retrieved_contexts": retrieved_contexts,
-        "retrieved_context_ids": retrieved_context_ids,
-        "latency_ms": round(latency_ms, 2),
-    }
+        prompt = (
+            "You are a helpful assistant.\n"
+            "Answer the user's question only using the retrieved context.\n"
+            "If the answer is not in the context, say so clearly.\n\n"
+            f"Question:\n{query}\n\n"
+            f"Retrieved context:\n{context_text}"
+        )
+
+        msg = self.llm.invoke(prompt)
+        
+        latency_ms = (time.perf_counter() - start) * 1000
+
+        return {
+            "question": query,
+            "response": self._message_to_text(msg) if msg is not None else "",
+            "retrieved_contexts": retrieved_contexts,
+            "retrieved_context_ids": retrieved_context_ids,
+            "latency_ms": round(latency_ms, 2),
+        }
