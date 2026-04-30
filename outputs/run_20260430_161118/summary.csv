@@ -1,0 +1,11 @@
+subset,metric,mean,median,min,max,count
+with_reference,faithfulness,1.0,1.0,1.0,1.0,
+with_reference,context_precision,0.9999999999,0.9999999999,0.9999999999,0.9999999999,
+with_reference,context_recall,1.0,1.0,1.0,1.0,
+with_reference,answer_accuracy,0.5,0.5,0.5,0.5,
+with_reference,bleu_score,0.04500731941285453,0.04500731941285453,0.04500731941285453,0.04500731941285453,
+with_reference,rouge_score,0.36363636363636365,0.36363636363636365,0.36363636363636365,0.36363636363636365,
+with_reference,latency_ms,20721.66,20721.66,20721.66,20721.66,
+with_reference,coverage=complete,1.0,,,,1.0
+with_reference,clarity=acceptable,1.0,,,,1.0
+with_reference,grounded_or_honest_refusal=pass,1.0,,,,1.0
