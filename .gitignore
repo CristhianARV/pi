@@ -11,3 +11,4 @@ wheels/
 pyproject.toml
 uv.lock
 data/
+backup/

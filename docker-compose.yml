@@ -1,14 +1,43 @@
 services:
+  qdrant_restore:
+    image: alpine:latest
+    container_name: qdrant_restore
+    volumes:
+      - qdrant_storage:/data
+      - ./backup:/backup:ro
+    command: >
+      sh -c "
+        if [ -f /data/.qdrant_restored ]; then
+          echo 'Qdrant backup already restored. Skipping restore.';
+          exit 0;
+        fi;
+
+        if [ ! -f /backup/qdrant_storage.tar.gz ]; then
+          echo 'ERROR: backup/qdrant_storage.tar.gz not found.';
+          exit 1;
+        fi;
+
+        echo 'Restoring Qdrant backup into Docker volume...';
+        find /data -mindepth 1 -maxdepth 1 -exec rm -rf {} +;
+        tar xzf /backup/qdrant_storage.tar.gz -C /data;
+        touch /data/.qdrant_restored;
+        echo 'Qdrant restore completed.';
+      "
+    restart: "no"
+
   qdrant:
     image: qdrant/qdrant:latest
     container_name: qdrant
     ports:
-      - "6333:6333" # Interface HTTP / Dashboard
-      - "6334:6334" # Interface gRPC
+      - "6333:6333"
+      - "6334:6334"
     volumes:
       - qdrant_storage:/qdrant/storage
+    depends_on:
+      qdrant_restore:
+        condition: service_completed_successfully
     restart: unless-stopped
 
 volumes:
   qdrant_storage:
-    external: false
+    name: qdrant_storage
