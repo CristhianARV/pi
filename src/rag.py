@@ -33,6 +33,10 @@ class RAGPipeline:
         self._agent = None
         self._last_retrieved_docs = []
         self._last_retrieved_query = None
+        self._active_theme = None
+
+    def set_active_theme(self, theme: str | None) -> None:
+        self._active_theme = theme
 
     def _build_retrieve_tool(self):
         vsm = self.vsm
@@ -41,7 +45,7 @@ class RAGPipeline:
         @tool(response_format="content_and_artifact")
         def retrieve_context(query: str):
             """Retrieve relevant document chunks to help answer a query."""
-            docs = vsm.similarity_search(query, k=k)
+            docs = vsm.similarity_search(query, k=k, theme=self._active_theme)
 
             self._last_retrieved_docs = docs
             self._last_retrieved_query = query
@@ -92,7 +96,12 @@ class RAGPipeline:
             return "\n".join(str(x) for x in content)
         return str(content)
 
-    def ask_with_context(self, query: str, top_k: int | None = None) -> dict:
+    def ask_with_context(
+        self,
+        query: str,
+        top_k: int | None = None,
+        theme: str | None = None,
+    ) -> dict:
         """
         Evaluation-friendly path:
         - retrieves contexts directly from the vector store
@@ -100,10 +109,11 @@ class RAGPipeline:
         - returns response + retrieved contexts + latency
         """
         k = top_k if top_k is not None else self.k
+        effective_theme = theme if theme is not None else self._active_theme
 
         start = time.perf_counter()
 
-        docs = self.vsm.similarity_search(query, k=k)
+        docs = self.vsm.similarity_search(query, k=k, theme=effective_theme)
         self._last_retrieved_docs = docs
         self._last_retrieved_query = query
 
@@ -140,6 +150,7 @@ class RAGPipeline:
 
         return {
             "question": query,
+            "theme": effective_theme,
             "response": self._message_to_text(msg) if msg is not None else "",
             "retrieved_contexts": retrieved_contexts,
             "retrieved_context_ids": retrieved_context_ids,

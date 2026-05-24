@@ -1,5 +1,6 @@
 import sys
 import os
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -12,8 +13,8 @@ from parser import DocumentParser
 from rag import RAGPipeline
 from interface_graphique import ChatApp
 
-FILE_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "Manuals", "mds_axis_compensation_en.pdf")
-COLLECTION = "docs"
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+COLLECTION = os.getenv("LOCAL_RAG_COLLECTION_NAME", "docs_thematic")
 
 
 def run():
@@ -33,9 +34,15 @@ def run():
 
     collection_info = vsm._client.get_collection(COLLECTION)
     if collection_info.points_count == 0:
-        with console.status("[cyan]Indexing document…[/cyan]"):
-            n = pipeline.index_file(FILE_PATH, parser)
-        console.print(f"[green]Indexed {n} chunks.[/green]")
+        pdf_paths = sorted(Path(DATA_DIR).rglob("*.pdf"))
+        if not pdf_paths:
+            raise FileNotFoundError(f"No PDF files found under: {DATA_DIR}")
+
+        total_chunks = 0
+        with console.status("[cyan]Indexing documents…[/cyan]"):
+            for pdf_path in pdf_paths:
+                total_chunks += pipeline.index_file(str(pdf_path), parser)
+        console.print(f"[green]Indexed {total_chunks} chunks from {len(pdf_paths)} files.[/green]")
     else:
         console.print(
             f"[dim]Collection '{COLLECTION}' already has "

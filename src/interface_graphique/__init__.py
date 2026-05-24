@@ -1,11 +1,18 @@
 import gradio as gr
 
 from rag import RAGPipeline
+from themes import THEMES, normalize_theme
 
 
 def _build_blocks(pipeline: RAGPipeline) -> gr.Blocks:
-    def respond(message: str, history: list):
+    def respond(message: str, history: list, theme: str):
         """Generator: yields the growing response string as chunks arrive."""
+        selected_theme = normalize_theme(theme)
+        if selected_theme == "Unknown":
+            yield "Please select a valid theme before asking a question."
+            return
+
+        pipeline.set_active_theme(selected_theme)
         accumulated = ""
 
         for msg in pipeline.stream(message):
@@ -33,8 +40,18 @@ def _build_blocks(pipeline: RAGPipeline) -> gr.Blocks:
 
     with gr.Blocks(title="RAG Assistant") as app:
         gr.Markdown("## RAG Assistant")
+
+        theme_dropdown = gr.Dropdown(
+            choices=THEMES,
+            label="Theme",
+            value=THEMES[0],
+            allow_custom_value=False,
+            interactive=True,
+        )
+
         gr.ChatInterface(
             fn=respond,
+            additional_inputs=[theme_dropdown],
             examples=["What is this document about?", "Summarise the key points."],
         )
 

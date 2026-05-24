@@ -1,8 +1,34 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
+from qdrant_client.http import models as rest
 from langchain_qdrant import QdrantVectorStore
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
+
+from themes import normalize_theme
+
+
+def build_theme_filter(theme: str | None):
+    """Build a Qdrant payload filter for the selected theme."""
+    if theme is None:
+        return None
+
+    raw = str(theme).strip()
+    if not raw or raw.lower() == "all":
+        return None
+
+    canonical = normalize_theme(raw)
+    if canonical == "Unknown":
+        canonical = raw
+
+    return rest.Filter(
+        must=[
+            rest.FieldCondition(
+                key="metadata.theme",
+                match=rest.MatchValue(value=canonical),
+            )
+        ]
+    )
 
 
 class VectorStoreManager:
@@ -50,5 +76,11 @@ class VectorStoreManager:
         """Index documents and return their ids."""
         return self.get_store().add_documents(docs)
 
-    def similarity_search(self, query: str, k: int = 10) -> list[Document]:
-        return self.get_store().similarity_search(query, k=k)
+    def similarity_search(
+        self,
+        query: str,
+        k: int = 10,
+        theme: str | None = None,
+    ) -> list[Document]:
+        theme_filter = build_theme_filter(theme)
+        return self.get_store().similarity_search(query, k=k, filter=theme_filter)

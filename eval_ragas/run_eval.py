@@ -23,6 +23,7 @@ from ragas.metrics.collections import (
 from ragas.metrics.collections import AnswerAccuracy
 
 from local_rag_adapter import LocalRAGClient
+from themes import normalize_theme
 
 def build_metrics(judge_llm) -> Tuple[List[Any], List[Any]]:
     """
@@ -120,9 +121,16 @@ async def collect_rag_outputs(
                 else ""
             )
 
+            theme = None
+            if "theme" in row and pd.notna(row["theme"]):
+                normalized = normalize_theme(str(row["theme"]).strip())
+                if normalized != "Unknown":
+                    theme = normalized
+
             rag_response = await rag_client.aquery(
                 question=question,
                 top_k=rag_top_k,
+                theme=theme,
             )
 
             ragas_rows.append(

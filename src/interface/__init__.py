@@ -5,6 +5,7 @@ from rich.markdown import Markdown
 from rich.rule import Rule
 
 from rag import RAGPipeline
+from themes import THEMES, normalize_theme
 
 console = Console()
 
@@ -17,11 +18,13 @@ class CLI:
 
     def __init__(self, pipeline: RAGPipeline):
         self.pipeline = pipeline
+        self.selected_theme = THEMES[0]
 
     def _print_banner(self) -> None:
         console.print(Panel(self.BANNER, subtitle=self.HELP, border_style="cyan"))
 
     def _stream_response(self, query: str) -> None:
+        self.pipeline.set_active_theme(self.selected_theme)
         console.print(Rule("[dim]Assistant[/dim]", style="cyan"))
         final_content = ""
         with console.status("[cyan]Thinking…[/cyan]", spinner="dots"):
@@ -54,6 +57,8 @@ class CLI:
 
     def run(self) -> None:
         self._print_banner()
+        console.print(f"[dim]Active theme: {self.selected_theme}[/dim]")
+        console.print("[dim]Use /theme to change domain.[/dim]")
         console.print()
 
         while True:
@@ -71,7 +76,22 @@ class CLI:
             if query.lower() == "/clear":
                 console.clear()
                 self._print_banner()
+                console.print(f"[dim]Active theme: {self.selected_theme}[/dim]")
                 console.print()
+                continue
+
+            if query.lower() == "/theme":
+                choice = Prompt.ask(
+                    "Theme",
+                    choices=THEMES,
+                    default=self.selected_theme,
+                )
+                normalized = normalize_theme(choice)
+                if normalized != "Unknown":
+                    self.selected_theme = normalized
+                    console.print(f"[green]Theme set to: {self.selected_theme}[/green]")
+                else:
+                    console.print("[yellow]Unknown theme, keeping previous value.[/yellow]")
                 continue
 
             self._stream_response(query)

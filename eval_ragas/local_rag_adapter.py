@@ -8,6 +8,7 @@ from bdVector import VectorStoreManager
 from llm import LLMManager
 from parser import DocumentParser
 from rag import RAGPipeline
+from themes import normalize_theme
 
 
 @dataclass
@@ -29,18 +30,16 @@ class LocalRAGClient:
         self.pipeline: Optional[RAGPipeline] = None
 
     def setup(self) -> None:
-        from pathlib import Path
-
         project_root = Path(__file__).resolve().parents[1]
-        default_manual_path = project_root / "data" / "Manuals" / "mds_axis_compensation_en.pdf"
-        manual_path = Path(
-            os.getenv("LOCAL_RAG_MANUAL_PATH", str(default_manual_path))
+        default_data_dir = project_root / "data"
+        data_dir = Path(
+            os.getenv("LOCAL_RAG_DATA_DIR", str(default_data_dir))
         ).expanduser().resolve()
 
-        collection_name = os.getenv("LOCAL_RAG_COLLECTION_NAME", "docs_eval_one")
-        max_index_docs = int(os.getenv("LOCAL_RAG_MAX_INDEX_DOCS", "5"))
+        collection_name = os.getenv("LOCAL_RAG_COLLECTION_NAME", "docs_thematic")
+        max_index_docs = int(os.getenv("LOCAL_RAG_MAX_INDEX_DOCS", "0"))
 
-        print(f"[DEBUG] manual_path={manual_path}")
+        print(f"[DEBUG] data_dir={data_dir}")
         print(f"[DEBUG] collection_name={collection_name}")
         print(f"[DEBUG] max_index_docs={max_index_docs}")
 
@@ -66,24 +65,38 @@ class LocalRAGClient:
         print(f"[DEBUG] existing points_count={points_count}")
 
         if points_count == 0:
-            if not manual_path.exists():
+            if not data_dir.exists():
                 raise FileNotFoundError(
-                    f"Manual not found: {manual_path}\n"
-                    "Set LOCAL_RAG_MANUAL_PATH to a valid PDF path."
+                    f"Data directory not found: {data_dir}\n"
+                    "Set LOCAL_RAG_DATA_DIR to a valid directory containing PDFs."
                 )
 
-            print("[DEBUG] loading docs...")
-            docs = parser.load(str(manual_path))
-            print(f"[DEBUG] parser returned {len(docs)} docs")
+            pdf_paths = sorted(data_dir.rglob("*.pdf"))
+            if not pdf_paths:
+                raise FileNotFoundError(
+                    f"No PDF files found under: {data_dir}\n"
+                    "Set LOCAL_RAG_DATA_DIR to a valid directory containing PDFs."
+                )
 
-            docs = docs[:max_index_docs]
-            print(f"[DEBUG] indexing {len(docs)} docs")
+            if max_index_docs > 0:
+                pdf_paths = pdf_paths[:max_index_docs]
 
-            if not docs:
+            total_chunks = 0
+            for pdf_path in pdf_paths:
+                print(f"[DEBUG] loading docs from {pdf_path}...")
+                docs = parser.load(str(pdf_path))
+                print(f"[DEBUG] parser returned {len(docs)} docs")
+
+                if not docs:
+                    continue
+
+                vsm.add_documents(docs)
+                total_chunks += len(docs)
+
+            if total_chunks == 0:
                 raise RuntimeError("Parser returned no documents to index.")
 
-            vsm.add_documents(docs)
-            print("[DEBUG] indexing done.")
+            print(f"[DEBUG] indexing done. total_chunks={total_chunks}")
 
         self.pipeline.build_agent()
         print("[DEBUG] agent ready.")
@@ -99,6 +112,7 @@ class LocalRAGClient:
         self,
         question: str,
         top_k: int = 5,
+        theme: str | None = None,
         extra_payload: Optional[Dict[str, Any]] = None,
     ) -> LocalRAGResponse:
         if self.pipeline is None:
@@ -107,7 +121,15 @@ class LocalRAGClient:
             )
 
         print(f"[DEBUG] querying: {question}")
-        result = self.pipeline.ask_with_context(question, top_k=top_k)
+        selected_theme = normalize_theme(theme) if theme is not None else None
+        if selected_theme == "Unknown":
+            selected_theme = None
+
+        result = self.pipeline.ask_with_context(
+            question,
+            top_k=top_k,
+            theme=selected_theme,
+        )
         print("[DEBUG] query done.")
 
         return LocalRAGResponse(

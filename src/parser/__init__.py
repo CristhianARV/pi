@@ -16,6 +16,8 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from enum import Enum
 
+from themes import infer_theme_from_path
+
 
 def _remove_toc_and_index(text: str) -> str:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
@@ -99,6 +101,9 @@ class DocumentParser:
         if not cleaned_md.strip():
             return []
 
+        document_name = Path(file_path).name
+        theme = infer_theme_from_path(file_path)
+
         cleaned_doc = self._converter.convert_string(
             cleaned_md,
             format=InputFormat.MD,
@@ -122,8 +127,10 @@ class DocumentParser:
             meta = _safe_meta(
                 chunk.meta.model_dump() if hasattr(chunk.meta, "model_dump") else {}
             )
-            meta["source"] = Path(file_path).name
+            meta["source"] = document_name
             meta["file_path"] = file_path
+            meta["document_name"] = document_name
+            meta["theme"] = theme
             meta["parser"] = "docling_ocr"
             docs.append(Document(page_content=text, metadata=meta))
         return docs
@@ -134,6 +141,9 @@ class DocumentParser:
             chunk_overlap=150,
         )
 
+        document_name = Path(file_path).name
+        theme = infer_theme_from_path(file_path)
+
         docs = []
         with pdfplumber.open(file_path) as pdf:
             for page_number, page in enumerate(pdf.pages, start=1):
@@ -143,8 +153,10 @@ class DocumentParser:
 
                 page_metadata = _safe_meta(
                     {
-                        "source": Path(file_path).name,
+                        "source": document_name,
                         "file_path": file_path,
+                        "document_name": document_name,
+                        "theme": theme,
                         "page": page_number,
                         "parser": "pdfplumber_fallback",
                     }
