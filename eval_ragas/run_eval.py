@@ -18,6 +18,28 @@ from ragas.metrics.collections import (
     RougeScore,
 )
 
+SEARCH_MODES = ("semantic", "text", "hybrid")
+
+
+def get_eval_search_modes() -> List[str]:
+    raw_modes = os.getenv("LOCAL_RAG_SEARCH_MODES", "semantic,text,hybrid")
+
+    modes = [
+        mode.strip()
+        for mode in raw_modes.split(",")
+        if mode.strip()
+    ]
+
+    invalid_modes = [mode for mode in modes if mode not in SEARCH_MODES]
+
+    if invalid_modes:
+        raise ValueError(
+            f"Invalid search mode(s): {invalid_modes}. "
+            f"Expected modes among: {SEARCH_MODES}"
+        )
+
+    return modes
+
 def normalize_theme(theme: str | None) -> str | None:
     if theme is None:
         return None
@@ -135,13 +157,15 @@ def build_metrics(judge_llm) -> Tuple[List[Any], List[Any]]:
 async def collect_rag_outputs(
     pool_df: pd.DataFrame,
     rag_top_k: int,
+    search_mode: str,
 ) -> Tuple[List[Dict[str, Any]], pd.DataFrame]:
     """
     Calls the local RAG once per question and returns:
     - ragas_rows: rows in Ragas-compatible format
     - audit_df: richer metadata for debugging and traceability
     """
-
+    old_search_mode = os.environ.get("LOCAL_RAG_SEARCH_MODE")
+    os.environ["LOCAL_RAG_SEARCH_MODE"] = search_mode
     ragas_rows: List[Dict[str, Any]] = []
     audit_rows: List[Dict[str, Any]] = []
 
@@ -174,6 +198,7 @@ async def collect_rag_outputs(
                     "retrieved_context_ids": rag_response.retrieved_context_ids,
                     "reference": reference if reference else None,
                     "selected_theme": theme,
+                    "search_mode": search_mode,
                 }
             )
 
@@ -183,6 +208,7 @@ async def collect_rag_outputs(
                     "source_type": row.get("source_type", ""),
                     "theme": row.get("theme", ""),
                     "selected_theme": theme,
+                    "search_mode": search_mode,
                     "topic": row.get("topic", ""),
                     "difficulty": row.get("difficulty", ""),
                     "tags": row.get("tags", ""),
@@ -206,6 +232,11 @@ async def collect_rag_outputs(
                     
                 }
             )
+
+    if old_search_mode is None:
+        os.environ.pop("LOCAL_RAG_SEARCH_MODE", None)
+    else:
+        os.environ["LOCAL_RAG_SEARCH_MODE"] = old_search_mode
 
     return ragas_rows, pd.DataFrame(audit_rows)
 
@@ -335,6 +366,46 @@ async def evaluate_subset(
 
     return merged
 
+def build_summary_for_mode(
+    search_mode: str,
+    scored_df: pd.DataFrame,
+) -> pd.DataFrame:
+    if scored_df.empty:
+        return pd.DataFrame(
+            [
+                {
+                    "search_mode": search_mode,
+                    "n_samples": 0,
+                }
+            ]
+        )
+
+    summary: Dict[str, Any] = {
+        "search_mode": search_mode,
+        "n_samples": len(scored_df),
+    }
+
+    numeric_cols = scored_df.select_dtypes(include="number").columns
+
+    for col in numeric_cols:
+        summary[f"avg_{col}"] = scored_df[col].mean()
+
+    for col in ["coverage", "clarity", "grounded_or_honest_refusal"]:
+        if col in scored_df.columns:
+            counts = scored_df[col].value_counts(dropna=False).to_dict()
+            summary[f"{col}_counts"] = json.dumps(
+                counts,
+                ensure_ascii=False,
+            )
+
+    if "grounded_or_honest_refusal" in scored_df.columns:
+        valid = scored_df["grounded_or_honest_refusal"].dropna()
+        if len(valid) > 0:
+            summary["grounded_or_honest_refusal_pass_rate"] = (
+                valid.eq("pass").mean()
+            )
+
+    return pd.DataFrame([summary])
 
 async def main() -> None:
     load_dotenv()
@@ -342,10 +413,12 @@ async def main() -> None:
     openai_api_key = os.environ["OPENAI_API_KEY"]
     judge_model = os.getenv("OPENAI_JUDGE_MODEL", "gpt-4o-mini")
     rag_top_k = int(os.getenv("LOCAL_RAG_TOP_K", "5"))
+
     judge_client = AsyncOpenAI(api_key=openai_api_key)
     judge_llm = llm_factory(judge_model, client=judge_client)
 
     pool_path = Path(os.getenv("EVAL_POOL_PATH", "data_eval/eval_pool.csv"))
+
     if not pool_path.exists():
         raise FileNotFoundError(
             f"Evaluation pool not found: {pool_path.resolve()}"
@@ -353,112 +426,116 @@ async def main() -> None:
 
     pool_df = pd.read_csv(pool_path)
 
+    max_samples = int(os.getenv("EVAL_MAX_SAMPLES", "0"))
+    if max_samples > 0:
+        pool_df = pool_df.head(max_samples).copy()
+
+    search_modes = get_eval_search_modes()
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     out_dir = Path("outputs") / f"run_{timestamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    metrics_with_reference, metrics_without_reference = build_metrics(judge_llm)
+    all_summary_frames = []
 
-    ragas_rows, audit_df = await collect_rag_outputs(
-        pool_df=pool_df,
-        rag_top_k=rag_top_k,
-    )
+    for search_mode in search_modes:
+        print(f"\n=== Running evaluation for search_mode={search_mode} ===")
 
-    audit_df.to_csv(out_dir / "raw_rag_outputs.csv", index=False)
+        mode_out_dir = out_dir / search_mode
+        mode_out_dir.mkdir(parents=True, exist_ok=True)
 
-    rows_with_ref, audit_with_ref, rows_without_ref, audit_without_ref = split_rows_by_reference(
-        ragas_rows=ragas_rows,
-        audit_df=audit_df,
-    )
+        metrics_with_reference, metrics_without_reference = build_metrics(judge_llm)
 
-    scored_with_ref = await evaluate_subset(
-        rows=rows_with_ref,
-        audit_df=audit_with_ref,
-        metrics=metrics_with_reference,
-        judge_llm=judge_llm,
-    )
-    if not scored_with_ref.empty:
-        scored_with_ref.to_csv(out_dir / "scored_with_reference.csv", index=False)
+        ragas_rows, audit_df = await collect_rag_outputs(
+            pool_df=pool_df,
+            rag_top_k=rag_top_k,
+            search_mode=search_mode,
+        )
 
-    scored_without_ref = await evaluate_subset(
-        rows=rows_without_ref,
-        audit_df=audit_without_ref,
-        metrics=metrics_without_reference,
-        judge_llm=judge_llm,
-    )
-    if not scored_without_ref.empty:
-        scored_without_ref.to_csv(out_dir / "scored_without_reference.csv", index=False)
+        audit_df.to_csv(
+            mode_out_dir / "raw_rag_outputs.csv",
+            index=False,
+        )
 
-    summary_rows = []
+        (
+            rows_with_ref,
+            audit_with_ref,
+            rows_without_ref,
+            audit_without_ref,
+        ) = split_rows_by_reference(
+            ragas_rows=ragas_rows,
+            audit_df=audit_df,
+        )
 
-    if not scored_with_ref.empty:
-        numeric_cols = [
-            col
-            for col in [
-                "faithfulness",
-                "context_precision",
-                "context_recall",
-                "answer_accuracy",
-                "bleu_score",
-                "rouge_score",
-                "latency_ms",
-            ]
-            if col in scored_with_ref.columns
-        ]
+        scored_with_reference = await evaluate_subset(
+            rows=rows_with_ref,
+            audit_df=audit_with_ref,
+            metrics=metrics_with_reference,
+            judge_llm=judge_llm,
+        )
 
-        for col in numeric_cols:
-            summary_rows.append(
-                {
-                    "subset": "with_reference",
-                    "metric": col,
-                    "mean": scored_with_ref[col].mean(),
-                    "median": scored_with_ref[col].median(),
-                    "min": scored_with_ref[col].min(),
-                    "max": scored_with_ref[col].max(),
-                }
+        scored_without_reference = await evaluate_subset(
+            rows=rows_without_ref,
+            audit_df=audit_without_ref,
+            metrics=metrics_without_reference,
+            judge_llm=judge_llm,
+        )
+
+        if not scored_with_reference.empty:
+            scored_with_reference.to_csv(
+                mode_out_dir / "scored_with_reference.csv",
+                index=False,
             )
 
-        for col in ["coverage", "clarity", "grounded_or_honest_refusal"]:
-            if col in scored_with_ref.columns:
-                counts = scored_with_ref[col].value_counts(dropna=False)
-                for value, count in counts.items():
-                    summary_rows.append(
-                        {
-                            "subset": "with_reference",
-                            "metric": f"{col}={value}",
-                            "mean": count,
-                            "median": None,
-                            "min": None,
-                            "max": None,
-                            "count": count,
-                        }
-                    )
-
-    if not scored_without_ref.empty:
-        numeric_cols = [
-            col
-            for col in ["faithfulness", "latency_ms"]
-            if col in scored_without_ref.columns
-        ]
-
-        for col in numeric_cols:
-            summary_rows.append(
-                {
-                    "subset": "without_reference",
-                    "metric": col,
-                    "mean": scored_without_ref[col].mean(),
-                    "median": scored_without_ref[col].median(),
-                    "min": scored_without_ref[col].min(),
-                    "max": scored_without_ref[col].max(),
-                }
+        if not scored_without_reference.empty:
+            scored_without_reference.to_csv(
+                mode_out_dir / "scored_without_reference.csv",
+                index=False,
             )
 
-    summary_df = pd.DataFrame(summary_rows)
-    summary_df.to_csv(out_dir / "summary.csv", index=False)
+        scored_frames = [
+            df
+            for df in [scored_with_reference, scored_without_reference]
+            if not df.empty
+        ]
 
-    print(f"Done. Outputs written to: {out_dir.resolve()}")
-    if not summary_df.empty:
-        print(summary_df)
+        if scored_frames:
+            scored_all = pd.concat(scored_frames, ignore_index=True)
+        else:
+            scored_all = pd.DataFrame()
+
+        scored_all.to_csv(
+            mode_out_dir / "scored_all.csv",
+            index=False,
+        )
+
+        summary_df = build_summary_for_mode(
+            search_mode=search_mode,
+            scored_df=scored_all,
+        )
+
+        summary_df.to_csv(
+            mode_out_dir / "summary.csv",
+            index=False,
+        )
+
+        all_summary_frames.append(summary_df)
+
+    if all_summary_frames:
+        summary_all_modes = pd.concat(
+            all_summary_frames,
+            ignore_index=True,
+        )
+    else:
+        summary_all_modes = pd.DataFrame()
+
+    summary_all_modes.to_csv(
+        out_dir / "summary_all_modes.csv",
+        index=False,
+    )
+
+    print(f"\nSaved outputs to: {out_dir.resolve()}")
+    print(summary_all_modes)
 
 
 if __name__ == "__main__":
