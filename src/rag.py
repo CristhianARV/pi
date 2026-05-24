@@ -138,9 +138,11 @@ class RAGPipeline:
     def _retrieve(self, query: str, mode: str, theme: str | None = None) -> list:
         """fetch_k → optional rerank → top_k."""
         k = self.fetch_k if self.use_reranker else self.top_k
-        candidates = self.vsm.search(query, k=k, mode=mode, theme=theme)
+        candidates = self.vsm.search(query, k=k, mode=mode)
+
         if self.use_reranker and self.reranker and candidates:
             return self.reranker.rerank(query, candidates, top_k=self.top_k)
+
         return candidates[: self.top_k]
 
     # ---------------- streaming ----------------
