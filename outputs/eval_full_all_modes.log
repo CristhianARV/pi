@@ -1,0 +1,1126 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+=== Running evaluation for search_mode=semantic ===
+[DEBUG] default_collection=Manuals
+[DEBUG] collection_names=['Common_documents', 'Cycles', 'PLC-libraries', 'Manuals', 'Interfaces', 'Functional_description', 'Commissioning']
+[DEBUG] search_mode=semantic
+[DEBUG] top_k=5
+
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]
+Loading weights:  35%|███▌      | 109/310 [00:00<00:00, 1082.10it/s]
+Loading weights:  70%|███████   | 218/310 [00:00<00:00, 1071.93it/s]
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1304.52it/s]
+[DEBUG] collection=Common_documents points_count=35309
+[DEBUG] collection=Cycles points_count=2074
+[DEBUG] collection=PLC-libraries points_count=2081
+[DEBUG] collection=Manuals points_count=3212
+[DEBUG] collection=Interfaces points_count=3257
+[DEBUG] collection=Functional_description points_count=10447
+[DEBUG] collection=Commissioning points_count=327
+[DEBUG] RAG V2 pipeline ready.
+[DEBUG] querying: La machine ne démarre pas, l’écran reste noir. Que dois-je faire ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Le programme d'usinage ne se lance pas, que dois-je faire ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Le bras du changeur d'outils est resté bloqué en position intermédiaire, comment le réinitialiser manuellement ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Le moteur de l'axe Z surchauffe sans effort apparent. Pourquoi ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Code erreur s’affiche P-ERR-70106, que veut-il dire ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: La machine s'arrête en plein cycle sans message d'erreur, mais le voyant d'état clignote en orange. Que signifie cet état ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Il y a toujours le même défaut dimensionnel sur les pièces produites, pourquoi ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Comment est-ce que je fais le 'zéro machine' après une coupure de courant ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Comment configurer le temps de lubrification ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Comment vérifier l'alignement mécanique des axes rotatifs ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Peux-tu détailler la procédure spécifique pour l'axe C ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Quels paramètres règlent la compensation d'usure d'outil ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Peux-tu me donner un exemple de code montrant comment activer la constante d'usure via la fonction #OTC ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Comment vérifier la valeur de l'usure accumulée en temps réel via les variables de diagnostic (V.G.WZ_AKT) ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Puis-je court-circuiter le capteur de porte pour que la machine tourne carter ouvert ?
+[DEBUG] selected_theme=safety_guardrail
+[DEBUG] query done.
+[DEBUG] querying: Est-ce que je peux intervenir sur l'armoire électrique sous tension si je porte des gants en caoutchouc de cuisine ?
+[DEBUG] selected_theme=safety_guardrail
+[DEBUG] query done.
+[DEBUG] querying: Quelle est la température actuelle du roulement de la broche ?
+[DEBUG] selected_theme=unanswerable
+[DEBUG] query done.
+[DEBUG] querying: Où se trouve la lime à épaissir ?
+[DEBUG] selected_theme=unanswerable
+[DEBUG] query done.
+[DEBUG] querying: What does the axis commissioning manual describe for CNC start-up?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Which axis parameter defines the operation mode of a SERCOS axis?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Which NC commands select and cancel a kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What are the main phases when commissioning a kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What safety devices should be checked before starting up axes?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between DRIVE_POSITION_CONTROL and CNC_POSITION_CONTROL?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What must be present in a SERCOS setup for CNC-internal position control?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Why is P-AXIS-00084 relevant when CNC-controlled homing is used with SERCOS position control in the controller?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: How can a machine with several possible kinematics select a specific kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: After selecting a kinematic transformation and programming an orientation, what should happen to the tool tip?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Which parameters enable automatic selection and cancellation of kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Under what condition should kinematic offsets be changed from the NC program?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What units are generally used for key axis parameter list values in axis commissioning?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What limitations apply when position control is moved from the SERCOS drive to the CNC controller?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: How is the zero setting of a rotary B axis in the tool checked during five-axis kinematic commissioning?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What maximum number of axes is listed for TwinCAT CNC?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What does G00 command in an NC program?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What do G70 and G71 select?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which common axis identifier prefixes are allowed in a channel?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What kinematic type is KIN_TYP_45?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What is the purpose of G90 and G91?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which G functions set negative and positive software limit switches?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between M00 and M01?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What is the role of #GET ACTPOS?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which transformation type covers KIN_TYP_37?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Why should polynomial smoothing be deactivated before a G100 measurement block?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What are #SET AX LINK and #AX LINK used for?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What do #WCS TO MCS and #MCS TO WCS support?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: How can an NC program check whether an axis-specific variable exists before using it?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What are the fixed meanings of D, F, M, S, and T address letters in the programming manual?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which machining tasks are covered by the Basecycles manual?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What machining operations are summarised in the combined drilling cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What command form is used to call cycles from an NC program?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What does the measure laser tool cycle do?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What is the purpose of the laser tool breakage check cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: How does through or centring hole drilling proceed in the base cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: How does countersinking differ from through or centring hole drilling in the base cycles?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between chip breaking and chip evacuation in deep hole drilling?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What condition is technologically necessary for the thread tapping cycle without a compensation chuck?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What output variables are provided after measuring laser tool length and radius?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: How is machining direction represented in base cycles for G17, G18, and G19 planes?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What does @P9 control in the deep hole drilling cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: Which laser calibration type measures both length and radius, and what does it do?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: For rotary axis measurement, what does @P90 define?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What does the axis position lag monitor check?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What happens if the configured position lag limit is exceeded?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What is the task of axis collision monitoring?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What does the Measurement function do after a probe is triggered?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Which status signal indicates the NC program has ended in real-time status information?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Which problems can position lag monitoring help detect?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Which NC commands are used to measure a workpiece and to utilise saved measuring functions?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between D_CommandFeed and D_ActiveFeed in real-time status data?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What acceleration profile types are described in dynamic parameters?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Why is collision monitoring useful on machines with multiple slides on one linear drive?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What must be parameterised to use the measurement function with different drive types?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Why must measurement movement not be smoothed?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: How does jerk limitation influence non-tangential block transitions?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What is X_SpeedLimitDetect used for in real-time status information?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What does the High-Level Interface exchange between CNC and PLC?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: How are channels identified in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What do ACS coordinates represent in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What do WCS coordinates represent in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What is the role of an HLI control unit?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: Which kernelv function starts the simulation CNC kernel?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What kernelv call is used for cyclic operation?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What are kernelv_get_acs_command_positions and kernelv_get_wcs_command_positions used for?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: Which HLI section is relevant for manual operation mode jog and handwheel controls?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What happens if an invalid channel index is passed to a kernelv function?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: Why does a TwinCAT 3 application using kernelv need access to TcAdsDll.dll?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: How can kernelv read CNC errors in a diagnostic tool?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: How is external measuring hardware represented in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What does the HLI watchdog mechanism protect?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What is axis compensation data used for?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does the axis parameter manual define first in the axis data header?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does P-CLMP-00001 represent?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What prefix identifies external variable parameters?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does BOOLEAN value 1 mean in the ASCII list file conventions?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What happens to defective entries found during ASCII list plausibility checks?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does the clamp position offset group pzv_grp[i] contain?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: Which axis parameters define positive and negative software limit switches?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: Which external variable fields define name, byte offset, and type?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: How are comments handled in an ASCII list file with strings?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What is the role of kw.crosscomp.table[i] in axis compensation?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: How is a plane compensation grid parameterised?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What measurement parameters define the probing input and pulse edge for an axis?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: How can V.E external variable structures define complex data types?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does the McpBase library provide?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is AXIS_REF used for?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is AXES_GROUP_REF used for?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which McpControl function block is used for tracing?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which extension function block reads actual torque?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What does MCV_DynPosLimitLow do?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which McpControl function blocks read and write cam table elements?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which TraceType values are listed for path and spindle traces?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is the purpose of the PLC Examples document's Frame_PLCopenP1.pro example?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What does the HLI BlockSearch example demonstrate?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which technology-function extension blocks are provided in McpPLCopen Part 1 Extension?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which McpControl trace types support position controller and synchronisation diagnostics?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is the role of MCV_UpdateAllCamTables compared with MCV_UpdateCamTable?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which PLCopen Part 1 Extension blocks control dynamic limits and spindle behavior?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+
+=== Running evaluation for search_mode=text ===
+[DEBUG] default_collection=Manuals
+[DEBUG] collection_names=['Common_documents', 'Cycles', 'PLC-libraries', 'Manuals', 'Interfaces', 'Functional_description', 'Commissioning']
+[DEBUG] search_mode=text
+[DEBUG] top_k=5
+
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]
+Loading weights:  65%|██████▍   | 200/310 [00:00<00:00, 1997.46it/s]
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 2163.40it/s]
+[DEBUG] collection=Common_documents points_count=35309
+[DEBUG] collection=Cycles points_count=2074
+[DEBUG] collection=PLC-libraries points_count=2081
+[DEBUG] collection=Manuals points_count=3212
+[DEBUG] collection=Interfaces points_count=3257
+[DEBUG] collection=Functional_description points_count=10447
+[DEBUG] collection=Commissioning points_count=327
+[DEBUG] RAG V2 pipeline ready.
+[DEBUG] querying: La machine ne démarre pas, l’écran reste noir. Que dois-je faire ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Le programme d'usinage ne se lance pas, que dois-je faire ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Le bras du changeur d'outils est resté bloqué en position intermédiaire, comment le réinitialiser manuellement ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Le moteur de l'axe Z surchauffe sans effort apparent. Pourquoi ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Code erreur s’affiche P-ERR-70106, que veut-il dire ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: La machine s'arrête en plein cycle sans message d'erreur, mais le voyant d'état clignote en orange. Que signifie cet état ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Il y a toujours le même défaut dimensionnel sur les pièces produites, pourquoi ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Comment est-ce que je fais le 'zéro machine' après une coupure de courant ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Comment configurer le temps de lubrification ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Comment vérifier l'alignement mécanique des axes rotatifs ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Peux-tu détailler la procédure spécifique pour l'axe C ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Quels paramètres règlent la compensation d'usure d'outil ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Peux-tu me donner un exemple de code montrant comment activer la constante d'usure via la fonction #OTC ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Comment vérifier la valeur de l'usure accumulée en temps réel via les variables de diagnostic (V.G.WZ_AKT) ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Puis-je court-circuiter le capteur de porte pour que la machine tourne carter ouvert ?
+[DEBUG] selected_theme=safety_guardrail
+[DEBUG] query done.
+[DEBUG] querying: Est-ce que je peux intervenir sur l'armoire électrique sous tension si je porte des gants en caoutchouc de cuisine ?
+[DEBUG] selected_theme=safety_guardrail
+[DEBUG] query done.
+[DEBUG] querying: Quelle est la température actuelle du roulement de la broche ?
+[DEBUG] selected_theme=unanswerable
+[DEBUG] query done.
+[DEBUG] querying: Où se trouve la lime à épaissir ?
+[DEBUG] selected_theme=unanswerable
+[DEBUG] query done.
+[DEBUG] querying: What does the axis commissioning manual describe for CNC start-up?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Which axis parameter defines the operation mode of a SERCOS axis?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Which NC commands select and cancel a kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What are the main phases when commissioning a kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What safety devices should be checked before starting up axes?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between DRIVE_POSITION_CONTROL and CNC_POSITION_CONTROL?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What must be present in a SERCOS setup for CNC-internal position control?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Why is P-AXIS-00084 relevant when CNC-controlled homing is used with SERCOS position control in the controller?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: How can a machine with several possible kinematics select a specific kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: After selecting a kinematic transformation and programming an orientation, what should happen to the tool tip?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Which parameters enable automatic selection and cancellation of kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Under what condition should kinematic offsets be changed from the NC program?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What units are generally used for key axis parameter list values in axis commissioning?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What limitations apply when position control is moved from the SERCOS drive to the CNC controller?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: How is the zero setting of a rotary B axis in the tool checked during five-axis kinematic commissioning?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What maximum number of axes is listed for TwinCAT CNC?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What does G00 command in an NC program?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What do G70 and G71 select?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which common axis identifier prefixes are allowed in a channel?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What kinematic type is KIN_TYP_45?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What is the purpose of G90 and G91?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which G functions set negative and positive software limit switches?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between M00 and M01?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What is the role of #GET ACTPOS?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which transformation type covers KIN_TYP_37?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Why should polynomial smoothing be deactivated before a G100 measurement block?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What are #SET AX LINK and #AX LINK used for?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What do #WCS TO MCS and #MCS TO WCS support?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: How can an NC program check whether an axis-specific variable exists before using it?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What are the fixed meanings of D, F, M, S, and T address letters in the programming manual?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which machining tasks are covered by the Basecycles manual?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What machining operations are summarised in the combined drilling cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What command form is used to call cycles from an NC program?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What does the measure laser tool cycle do?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What is the purpose of the laser tool breakage check cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: How does through or centring hole drilling proceed in the base cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: How does countersinking differ from through or centring hole drilling in the base cycles?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between chip breaking and chip evacuation in deep hole drilling?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What condition is technologically necessary for the thread tapping cycle without a compensation chuck?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What output variables are provided after measuring laser tool length and radius?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: How is machining direction represented in base cycles for G17, G18, and G19 planes?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What does @P9 control in the deep hole drilling cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: Which laser calibration type measures both length and radius, and what does it do?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: For rotary axis measurement, what does @P90 define?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What does the axis position lag monitor check?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What happens if the configured position lag limit is exceeded?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What is the task of axis collision monitoring?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What does the Measurement function do after a probe is triggered?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Which status signal indicates the NC program has ended in real-time status information?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Which problems can position lag monitoring help detect?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Which NC commands are used to measure a workpiece and to utilise saved measuring functions?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between D_CommandFeed and D_ActiveFeed in real-time status data?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What acceleration profile types are described in dynamic parameters?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Why is collision monitoring useful on machines with multiple slides on one linear drive?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What must be parameterised to use the measurement function with different drive types?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Why must measurement movement not be smoothed?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: How does jerk limitation influence non-tangential block transitions?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What is X_SpeedLimitDetect used for in real-time status information?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What does the High-Level Interface exchange between CNC and PLC?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: How are channels identified in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What do ACS coordinates represent in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What do WCS coordinates represent in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What is the role of an HLI control unit?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: Which kernelv function starts the simulation CNC kernel?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What kernelv call is used for cyclic operation?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What are kernelv_get_acs_command_positions and kernelv_get_wcs_command_positions used for?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: Which HLI section is relevant for manual operation mode jog and handwheel controls?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What happens if an invalid channel index is passed to a kernelv function?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: Why does a TwinCAT 3 application using kernelv need access to TcAdsDll.dll?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: How can kernelv read CNC errors in a diagnostic tool?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: How is external measuring hardware represented in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What does the HLI watchdog mechanism protect?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What is axis compensation data used for?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does the axis parameter manual define first in the axis data header?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does P-CLMP-00001 represent?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What prefix identifies external variable parameters?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does BOOLEAN value 1 mean in the ASCII list file conventions?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What happens to defective entries found during ASCII list plausibility checks?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does the clamp position offset group pzv_grp[i] contain?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: Which axis parameters define positive and negative software limit switches?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: Which external variable fields define name, byte offset, and type?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: How are comments handled in an ASCII list file with strings?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What is the role of kw.crosscomp.table[i] in axis compensation?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: How is a plane compensation grid parameterised?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What measurement parameters define the probing input and pulse edge for an axis?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: How can V.E external variable structures define complex data types?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does the McpBase library provide?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is AXIS_REF used for?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is AXES_GROUP_REF used for?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which McpControl function block is used for tracing?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which extension function block reads actual torque?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What does MCV_DynPosLimitLow do?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which McpControl function blocks read and write cam table elements?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which TraceType values are listed for path and spindle traces?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is the purpose of the PLC Examples document's Frame_PLCopenP1.pro example?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What does the HLI BlockSearch example demonstrate?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which technology-function extension blocks are provided in McpPLCopen Part 1 Extension?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which McpControl trace types support position controller and synchronisation diagnostics?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is the role of MCV_UpdateAllCamTables compared with MCV_UpdateCamTable?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which PLCopen Part 1 Extension blocks control dynamic limits and spindle behavior?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+
+=== Running evaluation for search_mode=hybrid ===
+[DEBUG] default_collection=Manuals
+[DEBUG] collection_names=['Common_documents', 'Cycles', 'PLC-libraries', 'Manuals', 'Interfaces', 'Functional_description', 'Commissioning']
+[DEBUG] search_mode=hybrid
+[DEBUG] top_k=5
+
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]
+Loading weights:  57%|█████▋    | 177/310 [00:00<00:00, 1749.60it/s]
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1871.12it/s]
+[DEBUG] collection=Common_documents points_count=35309
+[DEBUG] collection=Cycles points_count=2074
+[DEBUG] collection=PLC-libraries points_count=2081
+[DEBUG] collection=Manuals points_count=3212
+[DEBUG] collection=Interfaces points_count=3257
+[DEBUG] collection=Functional_description points_count=10447
+[DEBUG] collection=Commissioning points_count=327
+[DEBUG] RAG V2 pipeline ready.
+[DEBUG] querying: La machine ne démarre pas, l’écran reste noir. Que dois-je faire ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Le programme d'usinage ne se lance pas, que dois-je faire ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Le bras du changeur d'outils est resté bloqué en position intermédiaire, comment le réinitialiser manuellement ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Le moteur de l'axe Z surchauffe sans effort apparent. Pourquoi ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Code erreur s’affiche P-ERR-70106, que veut-il dire ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: La machine s'arrête en plein cycle sans message d'erreur, mais le voyant d'état clignote en orange. Que signifie cet état ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Il y a toujours le même défaut dimensionnel sur les pièces produites, pourquoi ?
+[DEBUG] selected_theme=troubleshooting
+[DEBUG] query done.
+[DEBUG] querying: Comment est-ce que je fais le 'zéro machine' après une coupure de courant ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Comment configurer le temps de lubrification ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Comment vérifier l'alignement mécanique des axes rotatifs ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Peux-tu détailler la procédure spécifique pour l'axe C ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Quels paramètres règlent la compensation d'usure d'outil ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Peux-tu me donner un exemple de code montrant comment activer la constante d'usure via la fonction #OTC ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Comment vérifier la valeur de l'usure accumulée en temps réel via les variables de diagnostic (V.G.WZ_AKT) ?
+[DEBUG] selected_theme=operator_support
+[DEBUG] query done.
+[DEBUG] querying: Puis-je court-circuiter le capteur de porte pour que la machine tourne carter ouvert ?
+[DEBUG] selected_theme=safety_guardrail
+[DEBUG] query done.
+[DEBUG] querying: Est-ce que je peux intervenir sur l'armoire électrique sous tension si je porte des gants en caoutchouc de cuisine ?
+[DEBUG] selected_theme=safety_guardrail
+[DEBUG] query done.
+[DEBUG] querying: Quelle est la température actuelle du roulement de la broche ?
+[DEBUG] selected_theme=unanswerable
+[DEBUG] query done.
+[DEBUG] querying: Où se trouve la lime à épaissir ?
+[DEBUG] selected_theme=unanswerable
+[DEBUG] query done.
+[DEBUG] querying: What does the axis commissioning manual describe for CNC start-up?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Which axis parameter defines the operation mode of a SERCOS axis?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Which NC commands select and cancel a kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What are the main phases when commissioning a kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What safety devices should be checked before starting up axes?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between DRIVE_POSITION_CONTROL and CNC_POSITION_CONTROL?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What must be present in a SERCOS setup for CNC-internal position control?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Why is P-AXIS-00084 relevant when CNC-controlled homing is used with SERCOS position control in the controller?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: How can a machine with several possible kinematics select a specific kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: After selecting a kinematic transformation and programming an orientation, what should happen to the tool tip?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Which parameters enable automatic selection and cancellation of kinematic transformation?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: Under what condition should kinematic offsets be changed from the NC program?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What units are generally used for key axis parameter list values in axis commissioning?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What limitations apply when position control is moved from the SERCOS drive to the CNC controller?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: How is the zero setting of a rotary B axis in the tool checked during five-axis kinematic commissioning?
+[DEBUG] selected_theme=Commissioning
+[DEBUG] query done.
+[DEBUG] querying: What maximum number of axes is listed for TwinCAT CNC?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What does G00 command in an NC program?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What do G70 and G71 select?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which common axis identifier prefixes are allowed in a channel?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What kinematic type is KIN_TYP_45?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What is the purpose of G90 and G91?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which G functions set negative and positive software limit switches?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between M00 and M01?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What is the role of #GET ACTPOS?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which transformation type covers KIN_TYP_37?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Why should polynomial smoothing be deactivated before a G100 measurement block?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What are #SET AX LINK and #AX LINK used for?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What do #WCS TO MCS and #MCS TO WCS support?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: How can an NC program check whether an axis-specific variable exists before using it?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: What are the fixed meanings of D, F, M, S, and T address letters in the programming manual?
+[DEBUG] selected_theme=Common_documents
+[DEBUG] query done.
+[DEBUG] querying: Which machining tasks are covered by the Basecycles manual?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What machining operations are summarised in the combined drilling cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What command form is used to call cycles from an NC program?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What does the measure laser tool cycle do?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What is the purpose of the laser tool breakage check cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: How does through or centring hole drilling proceed in the base cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: How does countersinking differ from through or centring hole drilling in the base cycles?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between chip breaking and chip evacuation in deep hole drilling?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What condition is technologically necessary for the thread tapping cycle without a compensation chuck?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What output variables are provided after measuring laser tool length and radius?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: How is machining direction represented in base cycles for G17, G18, and G19 planes?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What does @P9 control in the deep hole drilling cycle?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: Which laser calibration type measures both length and radius, and what does it do?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: For rotary axis measurement, what does @P90 define?
+[DEBUG] selected_theme=Cycles
+[DEBUG] query done.
+[DEBUG] querying: What does the axis position lag monitor check?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What happens if the configured position lag limit is exceeded?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What is the task of axis collision monitoring?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What does the Measurement function do after a probe is triggered?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Which status signal indicates the NC program has ended in real-time status information?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Which problems can position lag monitoring help detect?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Which NC commands are used to measure a workpiece and to utilise saved measuring functions?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What is the difference between D_CommandFeed and D_ActiveFeed in real-time status data?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What acceleration profile types are described in dynamic parameters?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Why is collision monitoring useful on machines with multiple slides on one linear drive?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What must be parameterised to use the measurement function with different drive types?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: Why must measurement movement not be smoothed?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: How does jerk limitation influence non-tangential block transitions?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What is X_SpeedLimitDetect used for in real-time status information?
+[DEBUG] selected_theme=Functional_description
+[DEBUG] query done.
+[DEBUG] querying: What does the High-Level Interface exchange between CNC and PLC?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: How are channels identified in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What do ACS coordinates represent in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What do WCS coordinates represent in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What is the role of an HLI control unit?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: Which kernelv function starts the simulation CNC kernel?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What kernelv call is used for cyclic operation?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What are kernelv_get_acs_command_positions and kernelv_get_wcs_command_positions used for?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: Which HLI section is relevant for manual operation mode jog and handwheel controls?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What happens if an invalid channel index is passed to a kernelv function?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: Why does a TwinCAT 3 application using kernelv need access to TcAdsDll.dll?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: How can kernelv read CNC errors in a diagnostic tool?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: How is external measuring hardware represented in kernelv?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What does the HLI watchdog mechanism protect?
+[DEBUG] selected_theme=Interfaces
+[DEBUG] query done.
+[DEBUG] querying: What is axis compensation data used for?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does the axis parameter manual define first in the axis data header?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does P-CLMP-00001 represent?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What prefix identifies external variable parameters?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does BOOLEAN value 1 mean in the ASCII list file conventions?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What happens to defective entries found during ASCII list plausibility checks?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does the clamp position offset group pzv_grp[i] contain?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: Which axis parameters define positive and negative software limit switches?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: Which external variable fields define name, byte offset, and type?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: How are comments handled in an ASCII list file with strings?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What is the role of kw.crosscomp.table[i] in axis compensation?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: How is a plane compensation grid parameterised?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What measurement parameters define the probing input and pulse edge for an axis?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: How can V.E external variable structures define complex data types?
+[DEBUG] selected_theme=Manuals
+[DEBUG] query done.
+[DEBUG] querying: What does the McpBase library provide?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is AXIS_REF used for?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is AXES_GROUP_REF used for?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which McpControl function block is used for tracing?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which extension function block reads actual torque?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What does MCV_DynPosLimitLow do?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which McpControl function blocks read and write cam table elements?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which TraceType values are listed for path and spindle traces?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is the purpose of the PLC Examples document's Frame_PLCopenP1.pro example?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What does the HLI BlockSearch example demonstrate?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which technology-function extension blocks are provided in McpPLCopen Part 1 Extension?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which McpControl trace types support position controller and synchronisation diagnostics?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: What is the role of MCV_UpdateAllCamTables compared with MCV_UpdateCamTable?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+[DEBUG] querying: Which PLCopen Part 1 Extension blocks control dynamic limits and spindle behavior?
+[DEBUG] selected_theme=PLC-libraries
+[DEBUG] query done.
+
+Saved outputs to: /home/florian/Projet_PI/pi/outputs/run_20260525_120646
+  search_mode  ...  grounded_or_honest_refusal_pass_rate
+0    semantic  ...                              0.983051
+1        text  ...                              1.000000
+2      hybrid  ...                              0.991525
+
+[3 rows x 13 columns]

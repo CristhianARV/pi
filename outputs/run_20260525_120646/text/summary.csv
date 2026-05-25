@@ -1,0 +1,2 @@
+search_mode,n_samples,avg_latency_ms,avg_faithfulness,avg_context_precision,avg_context_recall,avg_answer_accuracy,avg_bleu_score,avg_rouge_score,coverage_counts,clarity_counts,grounded_or_honest_refusal_counts,grounded_or_honest_refusal_pass_rate
+text,118,29623.630854669427,0.7669837825010238,0.5763653483693918,0.620863599677159,0.2627118644067797,0.0785668601726446,0.21733676027233095,"{""partial"": 71, ""complete"": 31, ""missing"": 16}","{""acceptable"": 99, ""clear"": 12, ""unclear"": 7}","{""pass"": 118}",1.0

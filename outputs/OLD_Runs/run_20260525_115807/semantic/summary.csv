@@ -1,0 +1,2 @@
+search_mode,n_samples,avg_latency_ms,avg_faithfulness,avg_context_precision,avg_context_recall,avg_answer_accuracy,avg_bleu_score,avg_rouge_score,coverage_counts,clarity_counts,grounded_or_honest_refusal_counts,grounded_or_honest_refusal_pass_rate
+semantic,2,42771.21286349984,0.625,0.4333333333188889,0.5,0.0,0.039565733988898275,0.12932355262547007,"{""missing"": 1, ""partial"": 1}","{""acceptable"": 2}","{""pass"": 2}",1.0

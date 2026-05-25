@@ -1,0 +1,4 @@
+search_mode,n_samples,avg_latency_ms,avg_faithfulness,avg_context_precision,avg_context_recall,avg_answer_accuracy,avg_bleu_score,avg_rouge_score,coverage_counts,clarity_counts,grounded_or_honest_refusal_counts,grounded_or_honest_refusal_pass_rate
+semantic,5,29586.99815300006,0.4833333333333333,0.3866666666511111,0.225,0.0,0.03928049050966239,0.09343517980304328,"{""missing"": 3, ""partial"": 2}","{""acceptable"": 4, ""unclear"": 1}","{""pass"": 5}",1.0
+text,5,22688.817216400093,0.6404761904761904,0.4108333333138958,0.2857142857142857,0.05,0.02298334119750351,0.11018378270039067,"{""missing"": 4, ""partial"": 1}","{""acceptable"": 3, ""unclear"": 2}","{""pass"": 5}",1.0
+hybrid,5,42686.169340999906,0.7476190476190476,0.4466666666461111,0.48571428571428565,0.0,0.02466576310861885,0.10996213201485674,"{""partial"": 3, ""missing"": 2}","{""acceptable"": 5}","{""pass"": 5}",1.0
