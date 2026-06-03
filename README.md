@@ -73,3 +73,6 @@ docker run --rm `
   alpine `
   sh -c "rm -rf /data/* && tar xzf /backup/qdrant_storage.tar.gz -C /data"
 ```
+
+# Repertoire Notebook
+Le repertoire notebook contient des notebooks pour tester les différentes fonctionnalités du projet. Vous pouvez les utiliser pour comprendre comment fonctionne le projet et pour tester les différentes fonctionnalités. Les notebooks sont organisés par thème, vous pouvez les trouver dans le repertoire notebook. Ils sont pas forcément à jour avec la dernière version du projet, mais ils peuvent vous aider à comprendre comment fonctionne le projet et comment utiliser les différentes fonctionnalités. N'hésitez pas à les utiliser et à les modifier pour vos besoins.
