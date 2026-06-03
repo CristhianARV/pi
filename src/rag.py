@@ -1,3 +1,5 @@
+import time
+
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from bdVector import VectorStoreManager
@@ -133,12 +135,14 @@ class RAGPipeline:
 
     # ---------------- retrieval ----------------
 
-    def _retrieve(self, query: str, mode: str) -> list:
+    def _retrieve(self, query: str, mode: str, theme: str | None = None) -> list:
         """fetch_k → optional rerank → top_k."""
         k = self.fetch_k if self.use_reranker else self.top_k
         candidates = self.vsm.search(query, k=k, mode=mode)
+
         if self.use_reranker and self.reranker and candidates:
             return self.reranker.rerank(query, candidates, top_k=self.top_k)
+
         return candidates[: self.top_k]
 
     # ---------------- streaming ----------------
@@ -254,6 +258,72 @@ class RAGPipeline:
         for chunk in self.stream(query):
             last = chunk
         return last
+    
+    def ask_with_context(
+        self,
+        query: str,
+        top_k: int | None = None,
+        theme: str | None = None,
+        mode: str | None = None,
+    ) -> dict:
+        """
+        One-shot RAG call for evaluation.
+
+        Returns the final answer plus retrieved contexts and metadata,
+        so external evaluators such as RAGAS can score the pipeline.
+        """
+        started = time.perf_counter()
+
+        selected_mode = mode if mode in SEARCH_MODES else self.search_mode
+
+        old_top_k = self.top_k
+        if top_k is not None:
+            self.top_k = int(top_k)
+
+        try:
+            docs = self._retrieve(
+                query=query,
+                mode=selected_mode,
+                theme=theme,
+            )
+
+            answer = self._answer_from_docs(
+                query,
+                docs,
+                selected_mode.upper(),
+            )
+
+        finally:
+            self.top_k = old_top_k
+
+        contexts = []
+        context_ids = []
+        context_metadata = []
+
+        for i, doc in enumerate(docs):
+            meta = dict(doc.metadata or {})
+            contexts.append(doc.page_content or "")
+            context_metadata.append(meta)
+
+            context_id = (
+                meta.get("id")
+                or meta.get("_id")
+                or meta.get("chunk_id")
+                or meta.get("source")
+                or meta.get("filename")
+                or f"doc_{i}"
+            )
+            context_ids.append(str(context_id))
+
+        return {
+            "response": answer,
+            "retrieved_contexts": contexts,
+            "retrieved_context_ids": context_ids,
+            "retrieved_context_metadata": context_metadata,
+            "latency_ms": (time.perf_counter() - started) * 1000,
+            "theme": theme,
+            "mode": selected_mode,
+        }
 
     # ---------------- indexing helpers ----------------
 

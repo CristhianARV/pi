@@ -10,7 +10,73 @@ from rag import RAGPipeline, SEARCH_MODES
 CONV_ROOT = Path(__file__).parent.parent.parent / "data" / "conversations"
 DEFAULT_CATEGORY = "General"
 
+MODE_LABELS = {
+    "semantic": "Recherche intelligente",
+    "text": "Recherche exacte",
+    "hybrid": "Recherche avancée",
+}
 
+MODE_DESCRIPTIONS = {
+    "semantic": (
+        "Recherche intelligente : l’assistant cherche les passages qui ont le même sens que votre question. "
+        "Ce mode est adapté si vous décrivez un problème avec vos propres mots, sans connaître le terme exact."
+    ),
+    "text": (
+        "Recherche exacte : l’assistant cherche les mots présents dans votre question directement dans les documents. "
+        "Ce mode est adapté pour retrouver une référence précise, un code erreur, un nom de pièce, "
+        "un modèle machine ou un terme technique exact."
+    ),
+    "hybrid": (
+        "Recherche avancée : l’assistant combine la recherche intelligente et la recherche exacte. "
+        "Il effectue une recherche par le sens, puis une recherche par mots-clés, avant de produire une réponse finale. "
+        "Ce mode est souvent le plus complet, mais il peut être plus lent."
+    ),
+}
+
+
+def _mode_choices() -> list[tuple[str, str]]:
+    return [
+        (MODE_LABELS.get(mode, mode), mode)
+        for mode in SEARCH_MODES
+    ]
+
+
+def _mode_description(mode: str) -> str:
+    return MODE_DESCRIPTIONS.get(
+        mode,
+        "Choisissez un mode de recherche."
+    )
+
+def _dyslexic_css(enabled: bool) -> str:
+    if not enabled:
+        return "<style></style>"
+
+    return """
+    <style>
+    body,
+    .gradio-container,
+    .gradio-container textarea,
+    .gradio-container input,
+    .gradio-container select,
+    .gradio-container button,
+    .gradio-container label,
+    .gradio-container p,
+    .gradio-container span {
+        font-family: Verdana, Arial, sans-serif !important;
+        letter-spacing: 0.045em !important;
+        word-spacing: 0.08em !important;
+        line-height: 1.65 !important;
+    }
+
+    .gradio-container textarea,
+    .gradio-container input,
+    .gradio-container .prose,
+    .gradio-container .message,
+    .gradio-container .markdown {
+        font-size: 1.04rem !important;
+    }
+    </style>
+    """
 # ============ Persistance disque ============
 
 def _load_all() -> dict[str, list[dict]]:
@@ -83,6 +149,7 @@ def _build_blocks(pipeline: RAGPipeline) -> gr.Blocks:
     initial_active = initial_convs[0]["id"]
 
     with gr.Blocks(title="RAG Assistant", fill_height=True) as app:
+        dyslexic_style = gr.HTML(value=_dyslexic_css(False))
         all_state = gr.State(initial)
         cat_state = gr.State(initial_cat)
         active_state = gr.State(initial_active)
@@ -101,6 +168,7 @@ def _build_blocks(pipeline: RAGPipeline) -> gr.Blocks:
                 with gr.Row():
                     add_cat_btn = gr.Button("➕ Catégorie", size="sm")
                     del_cat_btn = gr.Button("🗑️", size="sm")
+                
 
                 gr.Markdown("### Discussions")
                 new_btn = gr.Button("➕ Nouvelle discussion", variant="primary")
@@ -111,6 +179,22 @@ def _build_blocks(pipeline: RAGPipeline) -> gr.Blocks:
                     container=False,
                 )
                 del_conv_btn = gr.Button("🗑️ Supprimer", size="sm")
+                gr.Markdown("### Accessibilité")
+                dyslexic_font = gr.Checkbox(
+                    value=False,
+                    label="Police adaptée dyslexie",
+                    info="Augmente l’espacement, la taille du texte et utilise une police plus lisible.",
+                )
+                gr.Markdown(
+                    """
+                    **Mode d’affichage**
+
+                    Dans Paramètres ⚙️ :
+
+                    - `light` pour le mode jour
+                    - `dark` pour le mode nuit
+                    """
+                )
 
             # --- Main chat ---
             with gr.Column(scale=4):
@@ -127,7 +211,7 @@ def _build_blocks(pipeline: RAGPipeline) -> gr.Blocks:
                 )
                 with gr.Row():
                     search_mode = gr.Dropdown(
-                        choices=list(SEARCH_MODES),
+                        choices=_mode_choices(),
                         value="semantic",
                         label="Mode de recherche",
                     )
@@ -141,8 +225,17 @@ def _build_blocks(pipeline: RAGPipeline) -> gr.Blocks:
                         value=pipeline.collection_name,
                         label="Collection",
                     )
+                mode_description = gr.Markdown(
+                    value=_mode_description("semantic"),
+                    elem_classes=["mode-description"],
+                )
 
         # ============ Handlers ============
+        def on_search_mode_change(mode):
+            return _mode_description(mode)
+
+        def on_dyslexic_change(enabled):
+            return _dyslexic_css(enabled)
 
         def on_category_change(cat, all_convs):
             if cat not in all_convs:
@@ -290,6 +383,20 @@ def _build_blocks(pipeline: RAGPipeline) -> gr.Blocks:
             inputs=[cat_state, active_state, all_state],
             outputs=[all_state, active_state, conv_list, chatbot],
         )
+
+        search_mode.change(
+            on_search_mode_change,
+            inputs=[search_mode],
+            outputs=[mode_description],
+        )
+
+        dyslexic_font.change(
+            on_dyslexic_change,
+            inputs=[dyslexic_font],
+            outputs=[dyslexic_style],
+        )
+
+        
 
         msg.submit(
             on_submit,

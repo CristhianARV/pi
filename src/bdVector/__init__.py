@@ -73,7 +73,8 @@ class VectorStoreManager:
     def add_documents(self, docs):
         return self.get_store(RetrievalMode.HYBRID).add_documents(docs)
 
-    def search(self, query, mode=RetrievalMode.HYBRID, k=10):
+
+    def search(self, query, mode=RetrievalMode.HYBRID, k=10, **kwargs):
         return self.get_store(mode).similarity_search(query, k=k)
 
     @classmethod
